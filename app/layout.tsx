@@ -8,6 +8,13 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "PromptHub - AI 提示词共享平台",
   description: "发现、分享、复用 AI 提示词，提升你的工作效率",
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
 }
 
 export default function RootLayout({
