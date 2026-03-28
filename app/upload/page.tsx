@@ -45,6 +45,17 @@ export default function UploadPage() {
     }
   }, [status, router])
 
+  // 定义 fetchCategories 函数 - 必须在所有 useEffect 之前
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch("/api/categories")
+      const data = await res.json()
+      setCategories(data)
+    } catch (error) {
+      console.error("Error fetching categories:", error)
+    }
+  }
+
   useEffect(() => {
     if (mounted) {
       fetchCategories()
@@ -57,16 +68,6 @@ export default function UploadPage() {
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     )
-  }
-
-  const fetchCategories = async () => {
-    try {
-      const res = await fetch("/api/categories")
-      const data = await res.json()
-      setCategories(data)
-    } catch (error) {
-      console.error("Error fetching categories:", error)
-    }
   }
 
   const handleCreateCategory = async (e: React.FormEvent) => {
