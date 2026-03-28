@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useSession, signOut } from "next-auth/react"
-import { Plus, User, LogOut } from "lucide-react"
+import { Plus, User, LogOut, Settings } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
 import Image from "next/image"
@@ -83,6 +83,17 @@ export default function Navbar() {
                 </Link>
 
                 <div className="flex items-center gap-2">
+                  <Link href="/categories">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-muted-foreground hover:text-foreground"
+                      title="分类管理"
+                    >
+                      <Settings className="w-4 h-4" />
+                    </Button>
+                  </Link>
+                  
                   <Link href="/profile">
                     <Button
                       variant="ghost"
