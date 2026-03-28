@@ -3,16 +3,22 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { signIn } from "next-auth/react"
-import { Sparkles, Mail, User } from "lucide-react"
+import { Sparkles, Mail, User, Lock } from "lucide-react"
 import { Button } from "@/components/ui/button"
+
+// 超级管理员邮箱
+const SUPER_ADMIN_EMAIL = "newsunlee007@gmail.com"
 
 export default function LoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState("")
   const [name, setName] = useState("")
+  const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
-
   const [error, setError] = useState("")
+
+  // 判断是否为超级管理员邮箱
+  const isSuperAdmin = email === SUPER_ADMIN_EMAIL
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -23,6 +29,7 @@ export default function LoginPage() {
       const result = await signIn("credentials", {
         email,
         name,
+        password: isSuperAdmin ? password : "", // 普通用户不需要密码
         redirect: false,
       })
 
@@ -80,21 +87,47 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                昵称（可选）
-              </label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="怎么称呼你？"
-                  className="w-full pl-10 pr-4 py-3 bg-muted border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-                />
+            {/* 普通用户显示昵称输入，超级管理员不需要 */}
+            {!isSuperAdmin && (
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  昵称（可选）
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="怎么称呼你？"
+                    className="w-full pl-10 pr-4 py-3 bg-muted border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                  />
+                </div>
               </div>
-            </div>
+            )}
+
+            {/* 超级管理员显示密码输入 */}
+            {isSuperAdmin && (
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  管理员密码 <span className="text-red-400">*</span>
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="请输入管理员密码"
+                    required
+                    className="w-full pl-10 pr-4 py-3 bg-muted border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                  />
+                </div>
+                <p className="text-xs text-yellow-400 mt-1">
+                  检测到管理员账户，需要密码验证
+                </p>
+              </div>
+            )}
 
             {error && (
               <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
@@ -113,7 +146,11 @@ export default function LoginPage() {
 
           <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">
-              无需密码，输入邮箱即可登录或注册
+              {isSuperAdmin ? (
+                <span className="text-yellow-400">管理员账户需要密码验证</span>
+              ) : (
+                "普通用户无需密码，输入邮箱即可登录"
+              )}
             </p>
           </div>
         </div>

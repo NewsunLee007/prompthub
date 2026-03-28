@@ -12,6 +12,7 @@ import {
   ArrowLeft,
   Trash2,
   Sparkles,
+  Edit,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Navbar from "@/components/Navbar"
@@ -192,6 +193,8 @@ export default function PromptDetailPage() {
 
   const tags = JSON.parse(prompt.tags || "[]")
   const isAuthor = session?.user?.email === prompt.author.email
+  const isSuperAdmin = session?.user?.email === "newsunlee007@gmail.com"
+  const canEdit = isAuthor || isSuperAdmin
 
   return (
     <div className="min-h-screen bg-background grid-bg">
@@ -214,15 +217,26 @@ export default function PromptDetailPage() {
               {categoryLabels[prompt.category] || "其他"}
             </span>
             <div className="flex items-center gap-2">
-              {isAuthor && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleDelete}
-                  className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
+              {canEdit && (
+                <>
+                  <Link href={`/prompt/${prompt.id}/edit`}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                  </Link>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleDelete}
+                    className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </>
               )}
             </div>
           </div>
