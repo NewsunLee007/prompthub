@@ -16,7 +16,8 @@ const handler = NextAuth({
         if (!credentials?.email) return null
         
         try {
-          let user = await prisma.user.findUnique({
+          // 使用 findFirst 替代 findUnique 避免潜在问题
+          let user = await prisma.user.findFirst({
             where: { email: credentials.email }
           })
           
