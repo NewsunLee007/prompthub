@@ -1,12 +1,6 @@
 "use client"
 
-interface Category {
-  id: string
-  name: string
-  label: string
-  color: string
-  isSystem: boolean
-}
+import { Category } from "@/types"
 
 interface CategoryFilterProps {
   categories: Category[]

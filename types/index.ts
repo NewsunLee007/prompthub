@@ -23,9 +23,11 @@ export interface Prompt {
 }
 
 export interface Category {
-  value: string
+  id: string
+  name: string
   label: string
   color: string
+  isSystem: boolean
 }
 
 export interface User {
