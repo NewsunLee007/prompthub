@@ -13,21 +13,36 @@ const handler = NextAuth({
         name: { label: "Name", type: "text" },
       },
       async authorize(credentials) {
-        if (!credentials?.email) return null
+        console.log("Authorize called with:", credentials?.email)
+        
+        if (!credentials?.email) {
+          console.log("No email provided")
+          return null
+        }
         
         try {
+          console.log("Checking database connection...")
+          // 测试数据库连接
+          await prisma.$connect()
+          console.log("Database connected")
+          
           // 使用 findFirst 替代 findUnique 避免潜在问题
+          console.log("Looking for user:", credentials.email)
           let user = await prisma.user.findFirst({
             where: { email: credentials.email }
           })
           
           if (!user) {
+            console.log("User not found, creating new user")
             user = await prisma.user.create({
               data: {
                 email: credentials.email,
                 name: credentials.name || credentials.email.split('@')[0],
               }
             })
+            console.log("User created:", user.id)
+          } else {
+            console.log("User found:", user.id)
           }
           
           return {
@@ -37,8 +52,8 @@ const handler = NextAuth({
             image: user.image,
           }
         } catch (error) {
-          console.error("Auth error:", error)
-          return null
+          console.error("Auth error details:", error)
+          throw new Error("Database connection failed: " + (error as Error).message)
         }
       }
     })
@@ -75,7 +90,7 @@ const handler = NextAuth({
       return session
     }
   },
-  debug: process.env.NODE_ENV === "development",
+  debug: true, // Enable debug in production to see logs
 })
 
 export { handler as GET, handler as POST }

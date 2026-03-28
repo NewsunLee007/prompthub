@@ -12,9 +12,12 @@ export default function LoginPage() {
   const [name, setName] = useState("")
   const [loading, setLoading] = useState(false)
 
+  const [error, setError] = useState("")
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    setError("")
 
     try {
       const result = await signIn("credentials", {
@@ -23,12 +26,19 @@ export default function LoginPage() {
         redirect: false,
       })
 
-      if (result?.ok) {
+      console.log("SignIn result:", result)
+
+      if (result?.error) {
+        setError("登录失败: " + result.error)
+      } else if (result?.ok) {
         router.push("/")
         router.refresh()
+      } else {
+        setError("登录失败，请重试")
       }
     } catch (error) {
       console.error("Login error:", error)
+      setError("登录出错: " + (error as Error).message)
     } finally {
       setLoading(false)
     }
@@ -85,6 +95,12 @@ export default function LoginPage() {
                 />
               </div>
             </div>
+
+            {error && (
+              <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+                {error}
+              </div>
+            )}
 
             <Button
               type="submit"
