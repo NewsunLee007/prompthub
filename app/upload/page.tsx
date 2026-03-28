@@ -14,6 +14,7 @@ export default function UploadPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(false)
   const [tagInput, setTagInput] = useState("")
+  const [mounted, setMounted] = useState(false)
   const [formData, setFormData] = useState({
     title: "",
     content: "",
@@ -22,29 +23,30 @@ export default function UploadPage() {
     tags: [] as string[],
   })
 
+  // All useEffect hooks must be called before any conditional returns
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login")
     }
   }, [status, router])
 
-  // Prevent static generation - always render on client
-  const [mounted, setMounted] = useState(false)
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    if (mounted) {
+      fetchCategories()
+    }
+  }, [mounted])
   
-  if (!mounted) {
+  if (!mounted || status === "loading") {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     )
   }
-
-  useEffect(() => {
-    fetchCategories()
-  }, [])
 
   const fetchCategories = async () => {
     try {
@@ -99,14 +101,6 @@ export default function UploadPage() {
     } finally {
       setLoading(false)
     }
-  }
-
-  if (status === "loading") {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    )
   }
 
   return (
