@@ -1,6 +1,12 @@
 "use client"
 
-import { Category } from "@/types"
+interface Category {
+  id: string
+  name: string
+  label: string
+  color: string
+  isSystem: boolean
+}
 
 interface CategoryFilterProps {
   categories: Category[]
@@ -27,10 +33,10 @@ export default function CategoryFilter({
       </button>
       {categories.map((category) => (
         <button
-          key={category.value}
-          onClick={() => onSelect(category.value)}
+          key={category.name}
+          onClick={() => onSelect(category.name)}
           className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 ${
-            selected === category.value
+            selected === category.name
               ? "bg-primary text-white"
               : "bg-card text-muted-foreground hover:text-foreground border border-border hover:border-primary/50"
           }`}

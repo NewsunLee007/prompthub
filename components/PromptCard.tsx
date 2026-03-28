@@ -25,16 +25,12 @@ const categoryColors: Record<string, string> = {
   OTHER: "bg-gray-500/20 text-gray-400 border-gray-500/30",
 }
 
-const categoryLabels: Record<string, string> = {
-  WRITING: "写作助手",
-  CODING: "代码编程",
-  IMAGE: "图像生成",
-  LEARNING: "学习辅导",
-  LIFE: "生活助手",
-  CREATIVE: "创意灵感",
-  BUSINESS: "商业分析",
-  OTHER: "其他",
+interface CategoryInfo {
+  label: string
+  color: string
 }
+
+const categoryLabels: Record<string, CategoryInfo> = {}
 
 export default function PromptCard({
   prompt,
@@ -72,7 +68,7 @@ export default function PromptCard({
               categoryColors[prompt.category] || categoryColors.OTHER
             }`}
           >
-            {categoryLabels[prompt.category] || "其他"}
+            {categoryLabels[prompt.category]?.label || prompt.category}
           </span>
           <button
             onClick={handleCopy}

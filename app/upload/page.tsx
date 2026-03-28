@@ -3,10 +3,17 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
-import { Upload, Plus, X, Sparkles } from "lucide-react"
+import { Upload, Plus, X, Sparkles, FolderPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Navbar from "@/components/Navbar"
-import { Category } from "@/types"
+
+interface Category {
+  id: string
+  name: string
+  label: string
+  color: string
+  isSystem: boolean
+}
 
 export default function UploadPage() {
   const router = useRouter()
@@ -15,6 +22,10 @@ export default function UploadPage() {
   const [loading, setLoading] = useState(false)
   const [tagInput, setTagInput] = useState("")
   const [mounted, setMounted] = useState(false)
+  const [showNewCategory, setShowNewCategory] = useState(false)
+  const [newCategoryName, setNewCategoryName] = useState("")
+  const [newCategoryLabel, setNewCategoryLabel] = useState("")
+  const [creatingCategory, setCreatingCategory] = useState(false)
   const [formData, setFormData] = useState({
     title: "",
     content: "",
@@ -55,6 +66,41 @@ export default function UploadPage() {
       setCategories(data)
     } catch (error) {
       console.error("Error fetching categories:", error)
+    }
+  }
+
+  const handleCreateCategory = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newCategoryName.trim() || !newCategoryLabel.trim()) return
+
+    setCreatingCategory(true)
+    try {
+      const res = await fetch("/api/categories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: newCategoryName.trim(),
+          label: newCategoryLabel.trim(),
+          color: "blue",
+        }),
+      })
+
+      if (res.ok) {
+        const newCategory = await res.json()
+        setCategories([...categories, newCategory])
+        setFormData({ ...formData, category: newCategory.name })
+        setShowNewCategory(false)
+        setNewCategoryName("")
+        setNewCategoryLabel("")
+      } else {
+        const error = await res.json()
+        alert(error.error || "创建分类失败")
+      }
+    } catch (error) {
+      console.error("Error creating category:", error)
+      alert("创建分类失败")
+    } finally {
+      setCreatingCategory(false)
     }
   }
 
@@ -144,21 +190,79 @@ export default function UploadPage() {
               <label className="block text-sm font-medium text-foreground mb-2">
                 分类 <span className="text-red-400">*</span>
               </label>
-              <select
-                value={formData.category}
-                onChange={(e) =>
-                  setFormData({ ...formData, category: e.target.value })
-                }
-                required
-                className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-              >
-                <option value="">选择分类</option>
-                {categories.map((cat) => (
-                  <option key={cat.value} value={cat.value}>
-                    {cat.label}
-                  </option>
-                ))}
-              </select>
+              <div className="flex gap-2">
+                <select
+                  value={formData.category}
+                  onChange={(e) =>
+                    setFormData({ ...formData, category: e.target.value })
+                  }
+                  required
+                  className="flex-1 px-4 py-3 bg-muted border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                >
+                  <option value="">选择分类</option>
+                  {categories.map((cat) => (
+                    <option key={cat.name} value={cat.name}>
+                      {cat.label}
+                    </option>
+                  ))}
+                </select>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowNewCategory(true)}
+                  className="px-3"
+                  title="新建分类"
+                >
+                  <FolderPlus className="w-5 h-5" />
+                </Button>
+              </div>
+
+              {/* New Category Form */}
+              {showNewCategory && (
+                <div className="mt-3 p-4 bg-muted/50 rounded-xl border border-border">
+                  <h4 className="text-sm font-medium text-foreground mb-3">
+                    新建分类
+                  </h4>
+                  <form onSubmit={handleCreateCategory} className="space-y-3">
+                    <input
+                      type="text"
+                      value={newCategoryName}
+                      onChange={(e) => setNewCategoryName(e.target.value)}
+                      placeholder="分类标识（英文，如: MY_CATEGORY）"
+                      className="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    />
+                    <input
+                      type="text"
+                      value={newCategoryLabel}
+                      onChange={(e) => setNewCategoryLabel(e.target.value)}
+                      placeholder="分类名称（中文，如: 我的分类）"
+                      className="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    />
+                    <div className="flex gap-2">
+                      <Button
+                        type="submit"
+                        size="sm"
+                        disabled={creatingCategory || !newCategoryName.trim() || !newCategoryLabel.trim()}
+                        className="bg-gradient-to-r from-blue-500 to-purple-600 text-white border-0"
+                      >
+                        {creatingCategory ? "创建中..." : "创建"}
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setShowNewCategory(false)
+                          setNewCategoryName("")
+                          setNewCategoryLabel("")
+                        }}
+                      >
+                        取消
+                      </Button>
+                    </div>
+                  </form>
+                </div>
+              )}
             </div>
 
             {/* Tags */}

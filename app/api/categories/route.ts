@@ -1,16 +1,103 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
+import { prisma } from "@/lib/prisma"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 
-const categories = [
-  { value: "WRITING", label: "写作助手", color: "bg-blue-500" },
-  { value: "CODING", label: "代码编程", color: "bg-green-500" },
-  { value: "IMAGE", label: "图像生成", color: "bg-purple-500" },
-  { value: "LEARNING", label: "学习辅导", color: "bg-yellow-500" },
-  { value: "LIFE", label: "生活助手", color: "bg-pink-500" },
-  { value: "CREATIVE", label: "创意灵感", color: "bg-orange-500" },
-  { value: "BUSINESS", label: "商业分析", color: "bg-cyan-500" },
-  { value: "OTHER", label: "其他", color: "bg-gray-500" },
+// 默认系统分类
+const defaultCategories = [
+  { name: "WRITING", label: "写作助手", color: "blue", isSystem: true },
+  { name: "CODING", label: "代码编程", color: "green", isSystem: true },
+  { name: "IMAGE", label: "图像生成", color: "purple", isSystem: true },
+  { name: "LEARNING", label: "学习辅导", color: "yellow", isSystem: true },
+  { name: "LIFE", label: "生活助手", color: "pink", isSystem: true },
+  { name: "CREATIVE", label: "创意灵感", color: "orange", isSystem: true },
+  { name: "BUSINESS", label: "商业分析", color: "cyan", isSystem: true },
+  { name: "OTHER", label: "其他", color: "gray", isSystem: true },
 ]
 
+// 初始化系统分类
+async function initCategories() {
+  for (const cat of defaultCategories) {
+    await prisma.category.upsert({
+      where: { name: cat.name },
+      update: {},
+      create: cat,
+    })
+  }
+}
+
 export async function GET() {
-  return NextResponse.json(categories)
+  try {
+    // 确保系统分类存在
+    await initCategories()
+    
+    // 获取所有分类
+    const categories = await prisma.category.findMany({
+      orderBy: [
+        { isSystem: "desc" },
+        { createdAt: "asc" },
+      ],
+    })
+    
+    return NextResponse.json(categories)
+  } catch (error) {
+    console.error("Error fetching categories:", error)
+    return NextResponse.json(
+      { error: "Failed to fetch categories" },
+      { status: 500 }
+    )
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions)
+    
+    if (!session?.user?.email) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      )
+    }
+    
+    const body = await request.json()
+    const { name, label, description, color } = body
+    
+    if (!name || !label) {
+      return NextResponse.json(
+        { error: "Name and label are required" },
+        { status: 400 }
+      )
+    }
+    
+    // 检查是否已存在
+    const existing = await prisma.category.findUnique({
+      where: { name: name.toUpperCase() },
+    })
+    
+    if (existing) {
+      return NextResponse.json(
+        { error: "Category already exists" },
+        { status: 400 }
+      )
+    }
+    
+    const category = await prisma.category.create({
+      data: {
+        name: name.toUpperCase(),
+        label,
+        description,
+        color: color || "blue",
+        isSystem: false,
+      },
+    })
+    
+    return NextResponse.json(category, { status: 201 })
+  } catch (error) {
+    console.error("Error creating category:", error)
+    return NextResponse.json(
+      { error: "Failed to create category" },
+      { status: 500 }
+    )
+  }
 }
