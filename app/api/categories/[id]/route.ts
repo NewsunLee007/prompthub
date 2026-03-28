@@ -3,6 +3,64 @@ import { prisma } from "@/lib/prisma"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 
+// 更新分类（支持编辑系统分类）
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getServerSession(authOptions)
+    
+    if (!session?.user?.email) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      )
+    }
+    
+    const { id } = await params
+    const body = await request.json()
+    const { label, description, color } = body
+    
+    if (!label) {
+      return NextResponse.json(
+        { error: "Label is required" },
+        { status: 400 }
+      )
+    }
+    
+    // 检查分类是否存在
+    const existingCategory = await prisma.category.findUnique({
+      where: { id },
+    })
+    
+    if (!existingCategory) {
+      return NextResponse.json(
+        { error: "Category not found" },
+        { status: 404 }
+      )
+    }
+    
+    // 更新分类（允许编辑系统分类的 label、description、color）
+    const updated = await prisma.category.update({
+      where: { id },
+      data: {
+        label,
+        description: description || null,
+        color: color || existingCategory.color,
+      },
+    })
+    
+    return NextResponse.json(updated)
+  } catch (error) {
+    console.error("Error updating category:", error)
+    return NextResponse.json(
+      { error: "Failed to update category" },
+      { status: 500 }
+    )
+  }
+}
+
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
