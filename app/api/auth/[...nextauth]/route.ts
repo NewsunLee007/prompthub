@@ -15,30 +15,47 @@ const handler = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email) return null
         
-        let user = await prisma.user.findUnique({
-          where: { email: credentials.email }
-        })
-        
-        if (!user) {
-          user = await prisma.user.create({
-            data: {
-              email: credentials.email,
-              name: credentials.name || credentials.email.split('@')[0],
-            }
+        try {
+          let user = await prisma.user.findUnique({
+            where: { email: credentials.email }
           })
-        }
-        
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          image: user.image,
+          
+          if (!user) {
+            user = await prisma.user.create({
+              data: {
+                email: credentials.email,
+                name: credentials.name || credentials.email.split('@')[0],
+              }
+            })
+          }
+          
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            image: user.image,
+          }
+        } catch (error) {
+          console.error("Auth error:", error)
+          return null
         }
       }
     })
   ],
   session: {
-    strategy: "jwt"
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
   },
   pages: {
     signIn: "/login",
@@ -56,7 +73,8 @@ const handler = NextAuth({
       }
       return session
     }
-  }
+  },
+  debug: process.env.NODE_ENV === "development",
 })
 
 export { handler as GET, handler as POST }
