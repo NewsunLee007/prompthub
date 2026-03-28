@@ -46,7 +46,8 @@ export async function POST(request: NextRequest) {
       await prisma.favorite.delete({
         where: { id: existingFavorite.id },
       })
-      return NextResponse.json({ favorited: false })
+      const favoritesCount = await prisma.favorite.count({ where: { promptId } })
+      return NextResponse.json({ favorited: false, favoritesCount })
     }
 
     await prisma.favorite.create({
@@ -56,7 +57,8 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    return NextResponse.json({ favorited: true })
+    const favoritesCount = await prisma.favorite.count({ where: { promptId } })
+    return NextResponse.json({ favorited: true, favoritesCount })
   } catch (error) {
     console.error("Error toggling favorite:", error)
     return NextResponse.json(

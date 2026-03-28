@@ -9,6 +9,7 @@ interface PromptCardProps {
   prompt: Prompt
   isLiked?: boolean
   isFavorited?: boolean
+  isLoading?: boolean
   onLike?: (id: string) => void
   onFavorite?: (id: string) => void
   onCopy?: (content: string, id: string) => void
@@ -36,11 +37,14 @@ export default function PromptCard({
   prompt,
   isLiked = false,
   isFavorited = false,
+  isLoading = false,
   onLike,
   onFavorite,
   onCopy,
 }: PromptCardProps) {
   const [copied, setCopied] = useState(false)
+  const [liking, setLiking] = useState(false)
+  const [favoriting, setFavoriting] = useState(false)
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -54,6 +58,24 @@ export default function PromptCard({
     } catch (err) {
       console.error("Failed to copy:", err)
     }
+  }
+
+  const handleLike = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (liking || !onLike) return
+    setLiking(true)
+    await onLike(prompt.id)
+    setLiking(false)
+  }
+
+  const handleFavorite = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (favoriting || !onFavorite) return
+    setFavoriting(true)
+    await onFavorite(prompt.id)
+    setFavoriting(false)
   }
 
   const tags = JSON.parse(prompt.tags || "[]")
@@ -130,37 +152,31 @@ export default function PromptCard({
 
           <div className="flex items-center gap-3">
             <button
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                onLike?.(prompt.id)
-              }}
-              className={`flex items-center gap-1 text-sm transition-colors ${
+              onClick={handleLike}
+              disabled={liking}
+              className={`flex items-center gap-1 text-sm transition-colors disabled:opacity-50 ${
                 isLiked
                   ? "text-red-400"
                   : "text-muted-foreground hover:text-red-400"
               }`}
             >
               <Heart
-                className={`w-4 h-4 ${isLiked ? "fill-current" : ""}`}
+                className={`w-4 h-4 ${isLiked ? "fill-current" : ""} ${liking ? "animate-pulse" : ""}`}
               />
               <span>{prompt._count.likes}</span>
             </button>
 
             <button
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                onFavorite?.(prompt.id)
-              }}
-              className={`flex items-center gap-1 text-sm transition-colors ${
+              onClick={handleFavorite}
+              disabled={favoriting}
+              className={`flex items-center gap-1 text-sm transition-colors disabled:opacity-50 ${
                 isFavorited
                   ? "text-yellow-400"
                   : "text-muted-foreground hover:text-yellow-400"
               }`}
             >
               <Bookmark
-                className={`w-4 h-4 ${isFavorited ? "fill-current" : ""}`}
+                className={`w-4 h-4 ${isFavorited ? "fill-current" : ""} ${favoriting ? "animate-pulse" : ""}`}
               />
               <span>{prompt._count.favorites}</span>
             </button>

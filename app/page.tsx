@@ -148,7 +148,20 @@ export default function Home() {
       } else {
         setLikedPrompts(likedPrompts.filter((pid) => pid !== id))
       }
-      fetchPrompts()
+      
+      // 局部更新：只更新当前卡片的点赞数，不刷新整个列表
+      setPrompts(prev => prev.map(p => {
+        if (p.id === id) {
+          return {
+            ...p,
+            _count: {
+              ...p._count,
+              likes: data.likesCount
+            }
+          }
+        }
+        return p
+      }))
     } catch (error) {
       console.error("Error liking prompt:", error)
     }
@@ -168,7 +181,20 @@ export default function Home() {
       } else {
         setFavoritedPrompts(favoritedPrompts.filter((pid) => pid !== id))
       }
-      fetchPrompts()
+      
+      // 局部更新：只更新当前卡片的收藏数，不刷新整个列表
+      setPrompts(prev => prev.map(p => {
+        if (p.id === id) {
+          return {
+            ...p,
+            _count: {
+              ...p._count,
+              favorites: data.favoritesCount
+            }
+          }
+        }
+        return p
+      }))
     } catch (error) {
       console.error("Error favoriting prompt:", error)
     }

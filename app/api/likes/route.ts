@@ -46,7 +46,8 @@ export async function POST(request: NextRequest) {
       await prisma.like.delete({
         where: { id: existingLike.id },
       })
-      return NextResponse.json({ liked: false })
+      const likesCount = await prisma.like.count({ where: { promptId } })
+      return NextResponse.json({ liked: false, likesCount })
     }
 
     await prisma.like.create({
@@ -56,7 +57,8 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    return NextResponse.json({ liked: true })
+    const likesCount = await prisma.like.count({ where: { promptId } })
+    return NextResponse.json({ liked: true, likesCount })
   } catch (error) {
     console.error("Error toggling like:", error)
     return NextResponse.json(
