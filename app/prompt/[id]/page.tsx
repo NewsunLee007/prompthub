@@ -37,19 +37,19 @@ export default function PromptDetailPage() {
   const [copied, setCopied] = useState(false)
   const [isLiked, setIsLiked] = useState(false)
   const [isFavorited, setIsFavorited] = useState(false)
-
-  // Prevent static generation - always render on client
   const [mounted, setMounted] = useState(false)
+
+  // All useEffect hooks must be called before any conditional returns
   useEffect(() => {
     setMounted(true)
   }, [])
 
   useEffect(() => {
-    if (params.id) {
+    if (mounted && params.id) {
       fetchPrompt()
       checkUserInteractions()
     }
-  }, [params.id])
+  }, [mounted, params.id])
   
   if (!mounted) {
     return (
