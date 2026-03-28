@@ -2,9 +2,10 @@
 
 import Link from "next/link"
 import { useSession, signOut } from "next-auth/react"
-import { Sparkles, Plus, User, LogOut } from "lucide-react"
+import { Plus, User, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
+import Image from "next/image"
 
 export default function Navbar() {
   const { data: session } = useSession()
@@ -21,8 +22,14 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center glow-blue group-hover:glow-purple transition-all duration-300">
-                <Sparkles className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 rounded-lg overflow-hidden glow-blue group-hover:glow-purple transition-all duration-300">
+                <Image 
+                  src="/logo.png" 
+                  alt="PromptHub Logo" 
+                  width={32} 
+                  height={32}
+                  className="w-full h-full object-cover"
+                />
               </div>
               <span className="text-xl font-bold gradient-text">PromptHub</span>
             </Link>
@@ -48,8 +55,14 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center glow-blue group-hover:glow-purple transition-all duration-300">
-              <Sparkles className="w-5 h-5 text-white" />
+            <div className="w-8 h-8 rounded-lg overflow-hidden glow-blue group-hover:glow-purple transition-all duration-300">
+              <Image 
+                src="/logo.png" 
+                alt="PromptHub Logo" 
+                width={32} 
+                height={32}
+                className="w-full h-full object-cover"
+              />
             </div>
             <span className="text-xl font-bold gradient-text">PromptHub</span>
           </Link>

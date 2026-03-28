@@ -9,6 +9,15 @@ import SearchBar from "@/components/SearchBar"
 import { Prompt, Category } from "@/types"
 import { Button } from "@/components/ui/button"
 
+interface Stats {
+  totalPrompts: number
+  totalCategories: number
+  monthlyCopies: number
+  totalLikes: number
+  totalFavorites: number
+  totalUsers: number
+}
+
 export default function Home() {
   const [prompts, setPrompts] = useState<Prompt[]>([])
   const [categories, setCategories] = useState<Category[]>([])
@@ -19,12 +28,33 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [likedPrompts, setLikedPrompts] = useState<string[]>([])
   const [favoritedPrompts, setFavoritedPrompts] = useState<string[]>([])
+  const [stats, setStats] = useState<Stats>({
+    totalPrompts: 0,
+    totalCategories: 8,
+    monthlyCopies: 0,
+    totalLikes: 0,
+    totalFavorites: 0,
+    totalUsers: 0,
+  })
 
   useEffect(() => {
     fetchCategories()
     fetchLikedPrompts()
     fetchFavoritedPrompts()
+    fetchStats()
   }, [])
+
+  const fetchStats = async () => {
+    try {
+      const res = await fetch("/api/stats")
+      if (res.ok) {
+        const data = await res.json()
+        setStats(data)
+      }
+    } catch (error) {
+      console.error("Error fetching stats:", error)
+    }
+  }
 
   useEffect(() => {
     fetchPrompts()
@@ -179,7 +209,7 @@ export default function Home() {
                 <Zap className="w-6 h-6 text-blue-400" />
               </div>
               <div className="text-left">
-                <div className="text-2xl font-bold text-foreground">1000+</div>
+                <div className="text-2xl font-bold text-foreground">{stats.totalPrompts}+</div>
                 <div className="text-sm text-muted-foreground">提示词</div>
               </div>
             </div>
@@ -188,7 +218,7 @@ export default function Home() {
                 <TrendingUp className="w-6 h-6 text-purple-400" />
               </div>
               <div className="text-left">
-                <div className="text-2xl font-bold text-foreground">5000+</div>
+                <div className="text-2xl font-bold text-foreground">{stats.monthlyCopies}+</div>
                 <div className="text-sm text-muted-foreground">月复用</div>
               </div>
             </div>
@@ -197,7 +227,7 @@ export default function Home() {
                 <Sparkles className="w-6 h-6 text-cyan-400" />
               </div>
               <div className="text-left">
-                <div className="text-2xl font-bold text-foreground">8</div>
+                <div className="text-2xl font-bold text-foreground">{stats.totalCategories}</div>
                 <div className="text-sm text-muted-foreground">分类</div>
               </div>
             </div>
