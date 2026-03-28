@@ -34,12 +34,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const existingLike = await prisma.like.findUnique({
+    const existingLike = await prisma.like.findFirst({
       where: {
-        userId_promptId: {
-          userId: user.id,
-          promptId,
-        },
+        userId: user.id,
+        promptId,
       },
     })
 

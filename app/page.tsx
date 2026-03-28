@@ -33,10 +33,16 @@ export default function Home() {
   const fetchCategories = async () => {
     try {
       const res = await fetch("/api/categories")
+      if (!res.ok) {
+        console.error("Categories API error:", res.status)
+        setCategories([])
+        return
+      }
       const data = await res.json()
-      setCategories(data)
+      setCategories(data || [])
     } catch (error) {
       console.error("Error fetching categories:", error)
+      setCategories([])
     }
   }
 
@@ -50,11 +56,19 @@ export default function Home() {
       params.append("limit", "12")
 
       const res = await fetch(`/api/prompts?${params}`)
+      if (!res.ok) {
+        console.error("API error:", res.status, res.statusText)
+        setPrompts([])
+        setTotalPages(1)
+        return
+      }
       const data = await res.json()
-      setPrompts(data.prompts)
-      setTotalPages(data.pagination.totalPages)
+      setPrompts(data.prompts || [])
+      setTotalPages(data.pagination?.totalPages || 1)
     } catch (error) {
       console.error("Error fetching prompts:", error)
+      setPrompts([])
+      setTotalPages(1)
     } finally {
       setLoading(false)
     }
@@ -63,20 +77,30 @@ export default function Home() {
   const fetchLikedPrompts = async () => {
     try {
       const res = await fetch("/api/likes")
+      if (!res.ok) {
+        setLikedPrompts([])
+        return
+      }
       const data = await res.json()
       setLikedPrompts(data.likedPrompts || [])
     } catch (error) {
       console.error("Error fetching likes:", error)
+      setLikedPrompts([])
     }
   }
 
   const fetchFavoritedPrompts = async () => {
     try {
       const res = await fetch("/api/favorites")
+      if (!res.ok) {
+        setFavoritedPrompts([])
+        return
+      }
       const data = await res.json()
       setFavoritedPrompts(data.favoritedPrompts || [])
     } catch (error) {
       console.error("Error fetching favorites:", error)
+      setFavoritedPrompts([])
     }
   }
 

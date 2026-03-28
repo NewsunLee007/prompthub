@@ -1,209 +1,103 @@
 # PromptHub 部署指南
 
-## 部署方案
+## Neon PostgreSQL 配置
 
-使用 **Vercel** 进行部署（推荐，免费且简单）
+### 1. 创建 Neon 账户和数据库
 
----
+1. 访问 [Neon](https://neon.tech) 并注册账户
+2. 创建新项目
+3. 创建数据库（或使用默认的 `neondb`）
+4. 在 Dashboard 中获取连接字符串
 
-## 步骤 1: 准备代码
+### 2. 配置 Vercel 环境变量
 
-### 1.1 创建 GitHub 仓库
+在 Vercel 项目设置中，添加以下环境变量：
 
-1. 访问 https://github.com/new
-2. 创建新仓库，命名为 `prompthub`
-3. 选择 "Public" 或 "Private"
+```
+DATABASE_URL=postgresql://username:password@host/database?sslmode=require
+NEXTAUTH_URL=https://promt.newsunenglish.com
+NEXTAUTH_SECRET=your-random-secret-key-here
+```
 
-### 1.2 推送代码到 GitHub
+**注意**：
+- `DATABASE_URL` 从 Neon Dashboard 复制
+- `NEXTAUTH_SECRET` 使用随机字符串，可以通过 `openssl rand -base64 32` 生成
 
-在项目目录下执行：
+### 3. 部署步骤
 
+#### 本地准备
+
+1. 安装依赖：
 ```bash
-cd /Users/newsunlee/WorkBuddy/20260328132036/prompthub
+npm install
+```
 
-# 初始化 git（如果还没初始化）
-git init
+2. 生成 Prisma 客户端：
+```bash
+npx prisma generate
+```
 
-# 添加所有文件
+3. 推送到 GitHub：
+```bash
 git add .
-
-# 提交
-git commit -m "Initial commit - PromptHub v1.0"
-
-# 添加远程仓库（替换为你的用户名）
-git remote add origin https://github.com/你的用户名/prompthub.git
-
-# 推送
-git push -u origin main
+git commit -m "配置 Neon PostgreSQL"
+git push
 ```
 
----
+#### Vercel 部署
 
-## 步骤 2: 部署到 Vercel
+1. Vercel 会自动检测到 GitHub 推送并重新部署
+2. 首次部署时，Prisma 会自动创建数据库表
 
-### 2.1 注册/登录 Vercel
+### 4. 数据库迁移（如需要）
 
-1. 访问 https://vercel.com
-2. 用 GitHub 账号登录
+如果数据库表未自动创建，可以在本地运行：
 
-### 2.2 导入项目
-
-1. 点击 "Add New Project"
-2. 选择你的 `prompthub` 仓库
-3. 配置项目：
-   - **Framework Preset**: Next.js
-   - **Build Command**: `prisma generate && next build`
-   - **Output Directory**: `.next`
-   - **Install Command**: `npm install`
-
-### 2.3 配置环境变量
-
-在 Vercel 项目设置中添加：
-
-| 变量名 | 值 |
-|--------|-----|
-| `DATABASE_URL` | `file:./dev.db` |
-| `NEXTAUTH_SECRET` | 随机字符串（用于加密） |
-| `NEXTAUTH_URL` | `https://www.newsunenglish.com` |
-
-生成随机密钥：
 ```bash
-openssl rand -base64 32
+# 设置生产环境数据库 URL
+export DATABASE_URL="postgresql://username:password@host/database?sslmode=require"
+
+# 推送 schema 到数据库
+npx prisma db push
 ```
 
-### 2.4 部署
+### 5. 验证部署
 
-点击 "Deploy" 按钮，等待部署完成。
-
----
-
-## 步骤 3: 配置自定义域名
-
-### 3.1 在 Vercel 中添加域名
-
-1. 进入 Vercel 项目 → Settings → Domains
-2. 输入 `www.newsunenglish.com`
-3. 点击 "Add"
-
-### 3.2 在域名服务商处配置 DNS
-
-登录你的域名服务商（如阿里云、腾讯云、GoDaddy 等），添加以下 DNS 记录：
-
-**方案 A: CNAME 记录（推荐）**
-
-| 类型 | 主机记录 | 记录值 |
-|------|----------|--------|
-| CNAME | www | cname.vercel-dns.com |
-
-**方案 B: A 记录**
-
-| 类型 | 主机记录 | 记录值 |
-|------|----------|--------|
-| A | www | 76.76.21.21 |
-
-> 注意：Vercel 会自动提供 SSL 证书（HTTPS）
-
-### 3.3 等待 DNS 生效
-
-通常需要 5-30 分钟，最长 48 小时。
-
----
-
-## 步骤 4: 验证部署
-
-1. 访问 `https://www.newsunenglish.com`
-2. 测试各项功能：
-   - 登录/注册
-   - 上传提示词
-   - 浏览/搜索
-   - 点赞/收藏
-
----
-
-## 重要说明
-
-### 关于数据库
-
-当前使用 **SQLite** 文件数据库：
-- ✅ 优点：简单，无需额外配置
-- ⚠️ 限制：Vercel 是无服务器架构，SQLite 文件在每次部署后会重置
-
-**解决方案：**
-
-#### 方案 1: 使用 Vercel Postgres（推荐）
-
-1. 在 Vercel 项目中添加 Postgres 数据库
-2. 更新 `DATABASE_URL` 环境变量
-3. 重新部署
-
-#### 方案 2: 使用 Neon/Supabase（免费）
-
-1. 注册 https://neon.tech 或 https://supabase.com
-2. 创建 PostgreSQL 数据库
-3. 获取连接字符串
-4. 更新 `.env` 和 Vercel 环境变量
-5. 修改 `prisma/schema.prisma`：
-
-```prisma
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-```
-
-6. 重新生成迁移并部署
-
----
-
-## 备选部署方案
-
-如果不想用 Vercel，还可以选择：
-
-### 方案 B: 阿里云/腾讯云服务器
-
-1. 购买云服务器（ECS/CVM）
-2. 安装 Node.js、PM2
-3. 使用 Nginx 反向代理
-4. 配置 SSL 证书
-
-### 方案 C: Docker 部署
-
-```dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npx prisma generate
-RUN npm run build
-EXPOSE 3000
-CMD ["npm", "start"]
-```
-
----
+访问 https://promt.newsunenglish.com 验证：
+- 页面是否正常加载
+- 提示词列表是否显示
+- 登录功能是否正常
+- 上传提示词是否正常
 
 ## 故障排查
 
-### 问题 1: 数据库数据丢失
-**原因**: Vercel 无服务器架构，SQLite 文件不持久化
-**解决**: 迁移到 PostgreSQL
+### 页面加载后显示错误
 
-### 问题 2: 构建失败
-**检查**:
-- 环境变量是否正确设置
-- `prisma/schema.prisma` 配置是否正确
-- 构建命令是否为 `prisma generate && next build`
+1. 检查 Vercel Functions 日志
+2. 确认 `DATABASE_URL` 环境变量已正确设置
+3. 确认数据库表已创建
 
-### 问题 3: 域名无法访问
-**检查**:
-- DNS 记录是否正确添加
-- 等待 DNS 传播（最长 48 小时）
-- 在 Vercel 中检查域名状态
+### 数据库连接错误
 
----
+1. 确认 Neon 数据库允许所有 IP 访问（或配置 Vercel IP 白名单）
+2. 检查连接字符串是否正确
+3. 确认 SSL 模式设置为 `require`
 
-## 联系方式
+### 认证问题
 
-如有问题，请查看：
-- Vercel 文档: https://vercel.com/docs
-- Next.js 部署: https://nextjs.org/docs/deployment
+1. 确认 `NEXTAUTH_SECRET` 已设置
+2. 确认 `NEXTAUTH_URL` 与生产域名一致
+
+## 本次修复内容
+
+### 2026-03-28
+
+1. **数据库切换**: SQLite → PostgreSQL (Neon)
+   - 修改 `prisma/schema.prisma` 中的 datasource provider
+   - 更新 `.env` 配置说明
+
+2. **修复页面崩溃问题**:
+   - 修复 `SessionProvider.tsx` - 移除错误的 mounted 检查
+   - 修复 `app/page.tsx` - 添加 API 错误处理
+   - 修复 `app/api/likes/route.ts` - 使用 findFirst 替代 findUnique
+   - 修复 `app/api/favorites/route.ts` - 使用 findFirst 替代 findUnique

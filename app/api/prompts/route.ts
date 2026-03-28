@@ -24,6 +24,8 @@ export async function GET(request: NextRequest) {
         { description: { contains: search, mode: "insensitive" } },
       ]
     }
+    
+    console.log("Fetching prompts with where:", JSON.stringify(where))
 
     const [prompts, total] = await Promise.all([
       prisma.prompt.findMany({

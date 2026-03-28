@@ -34,12 +34,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const existingFavorite = await prisma.favorite.findUnique({
+    const existingFavorite = await prisma.favorite.findFirst({
       where: {
-        userId_promptId: {
-          userId: user.id,
-          promptId,
-        },
+        userId: user.id,
+        promptId,
       },
     })
 
