@@ -28,6 +28,20 @@ export default function UploadPage() {
     }
   }, [status, router])
 
+  // Prevent static generation - always render on client
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+  
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+
   useEffect(() => {
     fetchCategories()
   }, [])

@@ -38,12 +38,26 @@ export default function PromptDetailPage() {
   const [isLiked, setIsLiked] = useState(false)
   const [isFavorited, setIsFavorited] = useState(false)
 
+  // Prevent static generation - always render on client
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   useEffect(() => {
     if (params.id) {
       fetchPrompt()
       checkUserInteractions()
     }
   }, [params.id])
+  
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
 
   const fetchPrompt = async () => {
     try {
