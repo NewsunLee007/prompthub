@@ -12,34 +12,12 @@ const nextConfig: NextConfig = {
     ],
   },
   // 代码分割优化
+  serverExternalPackages: ['@prisma/client'],
   experimental: {
-    serverComponentsExternalPackages: ['@prisma/client'],
     scrollRestoration: true,
   },
-  // 构建优化
-  webpack: (config) => {
-    config.optimization = {
-      ...config.optimization,
-      splitChunks: {
-        chunks: 'all',
-        maxInitialRequests: 25,
-        maxAsyncRequests: 25,
-        minSize: 20000,
-        cacheGroups: {
-          default: {
-            minChunks: 2,
-            priority: -20,
-            reuseExistingChunk: true,
-          },
-          vendors: {
-            test: /[\\/]node_modules[\\/]/,
-            priority: -10,
-          },
-        },
-      },
-    };
-    return config;
-  },
+  // Turbopack配置
+  turbopack: {},
   // 缓存策略
   headers: async () => [
     {
