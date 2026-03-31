@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { FixedSizeGrid as Grid } from "react-window"
+import { FixedSizeList as List } from "react-window"
 
 interface VirtualListProps {
   itemCount: number
@@ -21,19 +21,17 @@ export default function VirtualList({
   gap = 0,
 }: VirtualListProps) {
   return (
-    <Grid
-      columnCount={1}
-      columnWidth={width}
-      rowCount={itemCount}
-      rowHeight={itemSize + gap}
+    <List
       width={width}
       height={height}
+      itemCount={itemCount}
+      itemSize={itemSize + gap}
     >
-      {({ columnIndex, rowIndex, style }) => (
+      {({ index, style }) => (
         <div style={{ ...style, paddingBottom: gap }}>
-          {children(rowIndex)}
+          {children(index)}
         </div>
       )}
-    </Grid>
+    </List>
   )
 }
