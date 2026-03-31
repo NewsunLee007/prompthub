@@ -53,14 +53,21 @@ export default function RecommendationSection({
             content: "作为一名专业的写作助手，我需要你帮助我生成一篇关于人工智能发展趋势的文章。文章应该包括以下几个方面：1. 人工智能的当前发展状况 2. 未来发展趋势 3. 对社会的影响 4. 面临的挑战和机遇。请确保文章结构清晰，内容详实，语言流畅。",
             category: "WRITING",
             tags: JSON.stringify(["写作", "AI", "内容生成"]),
+            authorId: "1",
             author: {
-              name: "AI专家"
+              id: "1",
+              name: "AI专家",
+              image: null,
+              email: null
             },
+            copyCount: 50,
             _count: {
               likes: 120,
               favorites: 80
             },
-            viewCount: 500
+            viewCount: 500,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
           },
           {
             id: "2",
@@ -69,14 +76,21 @@ export default function RecommendationSection({
             content: "作为一名专业的程序员，我需要你帮助我生成一个React组件，该组件是一个带有搜索功能的用户列表。组件应该包括以下功能：1. 搜索输入框 2. 用户列表展示 3. 搜索过滤功能 4. 响应式设计。请使用React Hooks和TypeScript来实现。",
             category: "CODING",
             tags: JSON.stringify(["代码", "React", "TypeScript"]),
+            authorId: "2",
             author: {
-              name: "代码大师"
+              id: "2",
+              name: "代码大师",
+              image: null,
+              email: null
             },
+            copyCount: 40,
             _count: {
               likes: 95,
               favorites: 65
             },
-            viewCount: 420
+            viewCount: 420,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
           }
         ],
         popular: [
@@ -87,14 +101,21 @@ export default function RecommendationSection({
             content: "请生成一张未来城市的科幻风格图像，要求：1. 高楼大厦鳞次栉比 2. 飞行汽车在空中穿梭 3. 霓虹灯闪烁 4. 雨天效果 5. 赛博朋克风格。请确保图像细节丰富，色彩鲜明，构图合理。",
             category: "IMAGE",
             tags: JSON.stringify(["图像生成", "科幻", "赛博朋克"]),
+            authorId: "3",
             author: {
-              name: "图像艺术家"
+              id: "3",
+              name: "图像艺术家",
+              image: null,
+              email: null
             },
+            copyCount: 60,
             _count: {
               likes: 150,
               favorites: 100
             },
-            viewCount: 600
+            viewCount: 600,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
           },
           {
             id: "4",
@@ -103,14 +124,21 @@ export default function RecommendationSection({
             content: "作为一名学习助手，我需要你帮助我制定一个学习计划，用于准备机器学习考试。计划应该包括：1. 学习内容的优先级 2. 每天的学习时间安排 3. 复习策略 4. 考试准备技巧。请确保计划合理可行，适合一个月的备考时间。",
             category: "LEARNING",
             tags: JSON.stringify(["学习", "教育", "机器学习"]),
+            authorId: "4",
             author: {
-              name: "学习专家"
+              id: "4",
+              name: "学习专家",
+              image: null,
+              email: null
             },
+            copyCount: 35,
             _count: {
               likes: 85,
               favorites: 70
             },
-            viewCount: 380
+            viewCount: 380,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
           }
         ],
         personalized: [
@@ -121,14 +149,21 @@ export default function RecommendationSection({
             content: "作为一名创意写作教练，我需要你为我提供10个创意写作的主题，每个主题都应该包含：1. 主题名称 2. 简短的背景描述 3. 写作方向建议。主题应该涵盖不同的 genres，包括科幻、奇幻、悬疑、浪漫等。",
             category: "WRITING",
             tags: JSON.stringify(["创意写作", "灵感", "写作主题"]),
+            authorId: "5",
             author: {
-              name: "作家"
+              id: "5",
+              name: "作家",
+              image: null,
+              email: null
             },
+            copyCount: 25,
             _count: {
               likes: 75,
               favorites: 55
             },
-            viewCount: 320
+            viewCount: 320,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
           }
         ]
       }
