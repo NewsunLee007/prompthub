@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Share2, Facebook, Twitter, Linkedin, Copy, Check } from "lucide-react"
+import { Share2, Twitter, Linkedin, Copy, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useNotification } from "@/components/ui/Notification"
 
@@ -76,7 +76,7 @@ export default function ShareSection({ promptId, promptTitle }: ShareSectionProp
           onClick={() => handleShare("facebook")}
           className="flex items-center gap-2"
         >
-          <Facebook className="w-4 h-4" />
+          <Share2 className="w-4 h-4" />
           Facebook
         </Button>
         <Button
