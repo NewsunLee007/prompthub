@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Checkbox, Check, Trash2, Tag, RefreshCw } from "lucide-react"
+import { Check, Trash2, Tag, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useNotification } from "@/components/ui/Notification"
 import { Prompt } from "@/types"
