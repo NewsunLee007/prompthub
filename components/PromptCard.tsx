@@ -49,15 +49,7 @@ export default function PromptCard({
   const handleCopy = async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    
-    try {
-      await navigator.clipboard.writeText(prompt.content)
-      setCopied(true)
-      onCopy?.(prompt.content, prompt.id)
-      setTimeout(() => setCopied(false), 2000)
-    } catch (err) {
-      console.error("Failed to copy:", err)
-    }
+    onCopy?.(prompt.content, prompt.id)
   }
 
   const handleLike = async (e: React.MouseEvent) => {
@@ -81,8 +73,8 @@ export default function PromptCard({
   const tags = JSON.parse(prompt.tags || "[]")
 
   return (
-    <div className="group relative bg-card rounded-xl border border-border hover:border-primary/50 transition-all duration-300 hover:glow-blue overflow-hidden">
-      <Link href={`/prompt/${prompt.id}`} className="block p-5">
+    <div className="group relative bg-card rounded-xl border border-border hover:border-primary/50 transition-all duration-300 hover:glow-blue overflow-hidden shadow-lg hover:shadow-xl hover:shadow-primary/10 transform hover:-translate-y-1">
+      <Link href={`/prompt/${prompt.id}`} className="block p-6">
         {/* Header */}
         <div className="flex items-start justify-between mb-3">
           <span
@@ -97,7 +89,7 @@ export default function PromptCard({
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-primary/10 text-primary rounded-full hover:bg-primary/20 transition-colors"
           >
             <Copy className="w-3.5 h-3.5" />
-            {copied ? "已复制" : "复制"}
+            复制
           </button>
         </div>
 
