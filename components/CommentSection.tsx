@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { MessageSquare, Send, Heart as LikeIcon, Trash2 } from "lucide-react"
+import { MessageSquare, Send, Heart, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useNotification } from "@/components/ui/Notification"
 
@@ -257,7 +257,7 @@ export default function CommentSection({ promptId }: CommentSectionProps) {
                   }`}
                   aria-label={comment.isLiked ? "取消点赞" : "点赞"}
                 >
-                  <LikeIcon
+                  <Heart
                     className={`w-4 h-4 ${
                       comment.isLiked ? "fill-current" : ""
                     }`}

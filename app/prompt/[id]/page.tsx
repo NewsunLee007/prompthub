@@ -16,6 +16,7 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Navbar from "@/components/Navbar"
+import CommentSection from "@/components/CommentSection"
 import { Prompt } from "@/types"
 
 const categoryLabels: Record<string, string> = {
@@ -323,7 +324,7 @@ export default function PromptDetailPage() {
         </div>
 
         {/* Actions */}
-        <div className="flex gap-4">
+        <div className="flex gap-4 mb-8">
           <Button
             onClick={handleLike}
             variant="outline"
@@ -354,6 +355,9 @@ export default function PromptDetailPage() {
             <span className="ml-1">({prompt._count.favorites})</span>
           </Button>
         </div>
+
+        {/* Comment Section */}
+        <CommentSection promptId={prompt.id} />
       </main>
     </div>
   )
